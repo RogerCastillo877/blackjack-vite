@@ -1,5 +1,5 @@
 /**
- * @param { String } card Ex: ['C', 'D']
+ * @param { String } card Ex: 'C'
  * @returns { Number } returns a value of selected card
 */
 export const cardValue = (card) => {

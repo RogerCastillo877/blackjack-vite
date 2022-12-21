@@ -1,4 +1,4 @@
-import { cardValue, createDeck, requestCard } from "./usecases";
+import { cardValue, createDeck, requestCard, createCard, acumulatePoints, pcTurn, determinateWinner } from "./usecases";
 
 const myModule = (() => {
   'use strict'
@@ -29,67 +29,29 @@ const myModule = (() => {
     btnStop.disabled = false;
   };
 
-  const acumulatePoints = (card, turn) => {
-    playersPoints[turn] = playersPoints[turn] + cardValue(card);
-    htmlPoints[turn].innerText = playersPoints[turn];
-    return playersPoints[turn];
-  };
-
-  const createCard = (card, turn) => {
-
-    const newCardImage = document.createElement('img');
-    newCardImage.src = `./assets/img/cartas/${card}.png`;
-    newCardImage.alt = `${card} player card image`;
-    newCardImage.classList.add('card');
-    divCardPlayers[turn].append(newCardImage);
-  }
-
-  const determinateWinner = () => {
-    const [minimumPoints, pcPoints] = playersPoints;
-    setTimeout(() => {
-      if (minimumPoints === 21 && pcPoints !== 21) return alert('Player Gana');
-      (pcPoints === minimumPoints) && alert('Pc Gana');
-      (minimumPoints > 21) && alert('Pc Gana');
-      if (pcPoints > 21) { return alert('Player Gana') };
-      (minimumPoints > pcPoints && minimumPoints <= 21) ? alert('Player Gana') : alert('Pc Gana');
-    }, 100);
-  }
-
-  const pcTurn = (minimumPoints) => {
-    let pcPoints = 0;
-    do {
-      const card = requestCard(deck);
-      pcPoints = acumulatePoints(card, playersPoints.length - 1);
-      createCard(card, playersPoints.length - 1)
-
-    } while ((pcPoints <= minimumPoints) && (minimumPoints <= 21));
-
-    determinateWinner();
-  }
-
   btnRequest.addEventListener('click', () => {
     const card = requestCard(deck);
-    const playerPoints = acumulatePoints(card, 0)
-    createCard(card, 0);
+    const playerPoints = acumulatePoints(card, 0, playersPoints, htmlPoints)
+    createCard(card, 0, divCardPlayers);
 
     if (playerPoints >= 21) {
       console.warn('Lo siento, perdiste :(');
       alert('Lo siento, perdiste :(');
       btnRequest.disabled = true;
       btnStop.disabled = true;
-      pcTurn(playerPoints);
+      pcTurn(playerPoints, deck, playersPoints, htmlPoints, divCardPlayers);
     } else if (playerPoints === 21) {
       console.warn('21, ¡genial!')
       btnRequest.disabled = true;
       btnStop.disabled = true;
-      pcTurn(playerPoints);
+      pcTurn(playerPoints, deck, playersPoints, htmlPoints, divCardPlayers);
     }
   });
 
   btnStop.addEventListener('click', (turn) => {
     btnRequest.disabled = true;
     btnStop.disabled = true;
-    pcTurn(playersPoints[0]);
+    pcTurn(playersPoints[0], deck, playersPoints, htmlPoints, divCardPlayers);
   });
 
   btnNew.addEventListener('click', () => {
