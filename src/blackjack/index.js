@@ -1,5 +1,6 @@
+import { cardValue } from "./usecases/card-value";
 import { createDeck } from "./usecases/create-deck";
-
+import { requestCard } from "./usecases/request-card";
 
 const myModule = (() => {
   'use strict'
@@ -28,21 +29,6 @@ const myModule = (() => {
 
     btnRequest.disabled = false;
     btnStop.disabled = false;
-  };
-
-  const requestCard = () => {
-    if (deck.length === 0) {
-      throw new Error('Doesn\'t have more cards')
-    };
-    return deck.pop();
-  };
-
-  const cardValue = (card) => {
-    const value = card.substring(0, card.length - 1);
-
-    return (isNaN(value)) ?
-      (value === 'A') ? 11 : 10
-      : value * 1;
   };
 
   const acumulatePoints = (card, turn) => {
@@ -74,7 +60,7 @@ const myModule = (() => {
   const pcTurn = (minimumPoints) => {
     let pcPoints = 0;
     do {
-      const card = requestCard();
+      const card = requestCard(deck);
       pcPoints = acumulatePoints(card, playersPoints.length - 1);
       createCard(card, playersPoints.length - 1)
 
@@ -84,7 +70,7 @@ const myModule = (() => {
   }
 
   btnRequest.addEventListener('click', () => {
-    const card = requestCard();
+    const card = requestCard(deck);
     const playerPoints = acumulatePoints(card, 0)
     createCard(card, 0);
 
